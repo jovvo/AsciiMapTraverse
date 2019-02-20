@@ -1,6 +1,7 @@
 package amt;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,8 +24,12 @@ public class AsciiMapLoaderTest {
 	
 	@Test
 	public void loadAsciiMap() {
-		assertNotNull(asciiMapLoader);
-
+		char[][] asciiMap = asciiMapLoader.loadAsciiMap("asciiMapExample1.txt");
+		assertNotNull(asciiMap);
+		assertEquals(5, asciiMap.length);
+		assertEquals(9, asciiMap[0].length);
+		assertEquals('@', asciiMap[0][0]);
+		assertEquals('+', asciiMap[4][8]);
 	}
 	
 }
