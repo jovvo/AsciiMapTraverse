@@ -1,4 +1,4 @@
-package amt;
+package amt.loader;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
