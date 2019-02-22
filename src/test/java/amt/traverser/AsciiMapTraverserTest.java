@@ -35,5 +35,10 @@ public class AsciiMapTraverserTest {
 		char[][] asciiMap = asciiMapLoader.loadAsciiMap("asciiMapExample2.txt");
 		asciiMapPathTraverser.traverseAsciiMap(new AsciiMap(asciiMap));
 	}
-
+	
+	@Test
+	public void traverseAsciiMap3() {
+		char[][] asciiMap = asciiMapLoader.loadAsciiMap("asciiMapExample3.txt");
+		asciiMapPathTraverser.traverseAsciiMap(new AsciiMap(asciiMap));
+	}
 }

@@ -10,14 +10,21 @@ public class AsciiMapPathTraverser {
 	
 	public void traverseAsciiMap(AsciiMap asciiMap) {
 		Coord startCoord = findStartCoord(asciiMap);
-		followPath(asciiMap, null, startCoord);
+		int retValue = followPath(asciiMap, null, startCoord);
+		if (retValue == 0) {
+			return;
+		}
 	}
 	
-	private void followPath(AsciiMap asciiMap, Coord previous, Coord current) {
+	private int followPath(AsciiMap asciiMap, Coord previous, Coord current) {
 		char currentVal = asciiMap.getAsciiMap()[current.getI()][current.getJ()];
 		System.out.println(currentVal);
 		
 		Coord nextCoord = null;
+		if(currentVal == 'x') {
+			System.out.println("end of path reached");
+			return 0;
+		}
 		
 		if (currentVal == ' ') {
 			throw new RuntimeException("Can not jump to empty field.");
@@ -38,15 +45,7 @@ public class AsciiMapPathTraverser {
 			if (nextCoord == null) {
 				throw new RuntimeException("Unable to find valid path.");
 			}
-			followPath(asciiMap, current, nextCoord);
-		} 		 
-		
-		
-		
-		if(currentVal == 'x') {
-			System.out.println("end of path reached");
-			return;
-		}else if (currentVal == '-' || currentVal == '|' || Character.isLetter(currentVal)) {
+		} else if (currentVal == '-' || currentVal == '|' || Character.isLetter(currentVal)) {
 			//try to follow direction
 			if(current.getI() > previous.getI()) {
 				nextCoord = new Coord(current.getI() + 1, current.getJ());
@@ -71,7 +70,7 @@ public class AsciiMapPathTraverser {
 			throw new RuntimeException("Unable to find valid path.");
 		}
 		
-		followPath(asciiMap, current, nextCoord);
+		return followPath(asciiMap, current, nextCoord);
 		
 		}
 
@@ -96,8 +95,14 @@ public class AsciiMapPathTraverser {
 	}	
 
 	private Coord findStartCoord(AsciiMap asciiMap) {
-		// TODO Auto-generated method stub
-		return new Coord(0, 0);
+		for (int i = 0; i < asciiMap.getAsciiMap().length; i++) {
+			for (int j = 0; j < asciiMap.getAsciiMap()[i].length; j++) {
+				if (asciiMap.getValue(new Coord(i, j)) == '@') {
+					return new Coord(i, j);
+				}
+			}
+		}
+		throw new RuntimeException("Unable to find start position.");
 	}
 
 }
