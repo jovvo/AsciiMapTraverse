@@ -22,11 +22,8 @@ public class AsciiMapPathTraverser {
 		if (currentVal == ' ') {
 			throw new RuntimeException("Can not jump to empty field.");
 		}
-		
-		char previousVal = ' ';
-		if (previous != null) {
-			previousVal = asciiMap.getAsciiMap()[previous.getI()][previous.getJ()];	
-		}else {
+
+		if (previous == null) {
 			//find first step (previous is null so direction is unknown)
 			
 			if (asciiMap.getValue(current.goDown()) != ' ') {
@@ -42,7 +39,6 @@ public class AsciiMapPathTraverser {
 				throw new RuntimeException("Unable to find valid path.");
 			}
 			followPath(asciiMap, current, nextCoord);
-				
 		} 		 
 		
 		
@@ -51,7 +47,7 @@ public class AsciiMapPathTraverser {
 			System.out.println("end of path reached");
 			return;
 		}else if (currentVal == '-' || currentVal == '|' || Character.isLetter(currentVal)) {
-			//TODO follow direction
+			//try to follow direction
 			if(current.getI() > previous.getI()) {
 				nextCoord = new Coord(current.getI() + 1, current.getJ());
 			} else if (current.getI() < previous.getI()){
@@ -62,24 +58,13 @@ public class AsciiMapPathTraverser {
 				nextCoord = new Coord(current.getI(), current.getJ() - 1);
 			}
 			
-		}else if (currentVal == '+') {
-			//TODO change direction
-			if(current.getI() == previous.getI()) {
-				//change i coord
-				if(asciiMap.getValue(new Coord(current.getI() + 1, current.getJ())) != ' ') {
-					nextCoord = new Coord(current.getI() + 1, current.getJ());
-				} else if (asciiMap.getValue(new Coord(current.getI() - 1, current.getJ())) != ' '){
-					nextCoord = new Coord(current.getI() - 1, current.getJ());
-				}
-				//nextCoord = new Coord(current.getI() + 1, current.getJ());
-			} else if (current.getJ() == previous.getJ()){
-				//change j coord
-				if(asciiMap.getValue(new Coord(current.getI(), current.getJ() + 1)) != ' ') {
-					nextCoord = new Coord(current.getI(), current.getJ() + 1);
-				} else if (asciiMap.getValue(new Coord(current.getI(), current.getJ() - 1)) != ' '){
-					nextCoord = new Coord(current.getI(), current.getJ() - 1);
-				}				
+			if (nextCoord == null || Character.isWhitespace(asciiMap.getValue(nextCoord))) {
+				nextCoord = changeDirection(asciiMap, previous, current);
 			}
+			
+		}else if (currentVal == '+') {
+			//try to change direction
+			nextCoord = changeDirection(asciiMap, previous, current);
 		}
 
 		if (nextCoord == null) {
@@ -88,11 +73,32 @@ public class AsciiMapPathTraverser {
 		
 		followPath(asciiMap, current, nextCoord);
 		
-		}	
+		}
+
+	private Coord changeDirection(AsciiMap asciiMap, Coord previous, Coord current) {
+		if(current.getI() == previous.getI()) {
+			//change i coord
+			if(!Character.isWhitespace(asciiMap.getValue(new Coord(current.getI() + 1, current.getJ())))) {
+				return new Coord(current.getI() + 1, current.getJ());
+			} else if (!Character.isWhitespace(asciiMap.getValue(new Coord(current.getI() - 1, current.getJ())))){
+				return new Coord(current.getI() - 1, current.getJ());
+			}
+			//nextCoord = new Coord(current.getI() + 1, current.getJ());
+		} else if (current.getJ() == previous.getJ()){
+			//change j coord
+			if(!Character.isWhitespace(asciiMap.getValue(new Coord(current.getI(), current.getJ() + 1)))) {
+				return new Coord(current.getI(), current.getJ() + 1);
+			} else if (!Character.isWhitespace(asciiMap.getValue(new Coord(current.getI(), current.getJ() - 1)))){
+				return new Coord(current.getI(), current.getJ() - 1);
+			}				
+		}
+		return null;
+	}	
 
 	private Coord findStartCoord(AsciiMap asciiMap) {
 		// TODO Auto-generated method stub
 		return new Coord(0, 0);
 	}
-	
+
 }
+
