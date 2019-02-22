@@ -1,33 +1,52 @@
 package amt.traverser;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 
 import amt.model.AsciiMap;
+import amt.model.AsciiMapTraverseResult;
 import amt.model.Coord;
 
 @Component
 public class AsciiMapPathTraverser {
 	
-	public void traverseAsciiMap(AsciiMap asciiMap) {
+	private List<Character> traversedLetters;
+	private List<Character> traversedPath;
+	
+	public AsciiMapTraverseResult traverseAsciiMap(AsciiMap asciiMap) {
+		traversedLetters = new ArrayList<>();
+		traversedPath = new ArrayList<>();
+		
 		Coord startCoord = findStartCoord(asciiMap);
 		int retValue = followPath(asciiMap, null, startCoord);
 		if (retValue == 0) {
-			return;
+			AsciiMapTraverseResult result = new AsciiMapTraverseResult();
+			result.setTraversedLetters(traversedLetters);
+			result.setTraversedPath(traversedPath);
+			return result;
 		}
+		throw new RuntimeException("Error occured. Please check logs.");
 	}
 	
 	private int followPath(AsciiMap asciiMap, Coord previous, Coord current) {
 		char currentVal = asciiMap.getAsciiMap()[current.getI()][current.getJ()];
-		System.out.println(currentVal);
-		
-		Coord nextCoord = null;
-		if(currentVal == 'x') {
-			System.out.println("end of path reached");
-			return 0;
-		}
 		
 		if (currentVal == ' ') {
 			throw new RuntimeException("Can not jump to empty field.");
+		}
+		
+		traversedPath.add(currentVal);
+		if (Character.isLetter(currentVal) && currentVal != 'x') {
+			traversedLetters.add(currentVal);
+		}
+		
+		Coord nextCoord = null;
+		
+		if(currentVal == 'x') {
+			System.out.println("end of path reached");
+			return 0;
 		}
 
 		if (previous == null) {
@@ -60,12 +79,12 @@ public class AsciiMapPathTraverser {
 			if (nextCoord == null || Character.isWhitespace(asciiMap.getValue(nextCoord))) {
 				nextCoord = changeDirection(asciiMap, previous, current);
 			}
-			
 		}else if (currentVal == '+') {
 			//try to change direction
 			nextCoord = changeDirection(asciiMap, previous, current);
 		}
 
+		//validate next position is found
 		if (nextCoord == null) {
 			throw new RuntimeException("Unable to find valid path.");
 		}
